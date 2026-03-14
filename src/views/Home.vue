@@ -1,80 +1,47 @@
 <template>
 
-  <div class="container">
+<div class="container py-4">
 
-    <h1>¿Te gusta este campeón?</h1>
+<h1 class="text-center mb-4">
+League Champion Voting
+</h1>
 
-    <VsSection
-      v-if="currentChampion"
-      :champion="currentChampion"
-      :likes="likes"
-      :dislikes="dislikes"
-      @like="voteLike"
-      @dislike="voteDislike"
-    />
+<SearchBar />
 
-  </div>
+<FilterSort />
+
+<div v-if="store.loading" class="text-center mt-4">
+  Cargando campeones...
+</div>
+
+<div v-if="store.error" class="alert alert-danger">
+  {{store.error}}
+</div>
+
+<div class="vote-center">
+  <VoteSection v-if="store.currentChampion"/>
+</div>
+
+<ChampionList/>
+
+</div>
 
 </template>
 
-<script>
+<script setup>
 
-import VsSection from "../components/VsSection.vue"
+import { onMounted } from 'vue'
+import { useChampionStore } from '../stores/championStore'
 
-export default {
+import SearchBar from '../components/SearchBar.vue'
+import FilterSort from '../components/FilterSort.vue'
+import VoteSection from '../components/VoteSection.vue'
+import ChampionList from '../components/ChampionList.vue'
 
-  components:{ VsSection },
+const store = useChampionStore()
 
-  data(){
-    return{
-      champions:[],
-      currentChampion:null,
-      currentIndex:0,
-      likes:0,
-      dislikes:0
-    }
-  },
-
-  methods:{
-
-    nextChampion(){
-
-      this.currentIndex++
-
-      if(this.currentIndex >= this.champions.length){
-        this.currentIndex = 0
-      }
-
-      this.currentChampion = this.champions[this.currentIndex]
-
-    },
-
-    voteLike(){
-      this.likes++
-      this.nextChampion()
-    },
-
-    voteDislike(){
-      this.dislikes++
-      this.nextChampion()
-    }
-
-  },
-
-  mounted(){
-
-    fetch("https://ddragon.leagueoflegends.com/cdn/13.24.1/data/en_US/champion.json")
-    .then(res => res.json())
-    .then(data => {
-
-      this.champions = Object.values(data.data)
-
-      this.currentChampion = this.champions[0]
-
-    })
-
-  }
-
-}
+onMounted(()=>{
+  store.fetchChampions()
+})
 
 </script>

@@ -1,29 +1,32 @@
 <template>
 
-<div class="card">
+<div class="card champion-card shadow">
 
-  <img :src="imageUrl" :alt="champion.name">
+  <img
+    :src="img"
+    class="card-img-top"
+  />
 
-  <h2>{{ champion.name }}</h2>
+  <div class="card-body text-center">
+
+    <h4 class="card-title">
+      {{champion.name}}
+    </h4>
+
+  </div>
 
 </div>
 
 </template>
 
-<script>
+<script setup>
 
-export default{
+import { computed } from 'vue'
 
-  props:["champion"],
+const props = defineProps(['champion'])
 
-  computed:{
-
-    imageUrl(){
-      return `https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/${this.champion.image.full}`
-    }
-
-  }
-
-}
+const img = computed(() =>
+`https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/${props.champion.image.full}`
+)
 
 </script>
